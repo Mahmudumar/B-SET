@@ -1,23 +1,38 @@
-import PyPDF2
+import matplotlib.pyplot as plt
+import pandas as pd
 
-# Open the PDF file in binary mode
-with open('b-stat.pdf', 'rb') as file:
-    # Create a PDF reader object
-    pdf_reader = PyPDF2.PdfReader(file)
+# Hypothetical bank statement data with similar descriptions
+bank_statement = [
+    {'date': '2024-05-01', 'description': 'GROCERY STORE', 'amount': -50.00},
+    {'date': '2024-05-03', 'description': 'RESTAURANT', 'amount': -30.00},
+    {'date': '2024-05-05', 'description': 'GAS STATION', 'amount': -40.00},
+    {'date': '2024-05-10', 'description': 'ELECTRIC COMPANY', 'amount': -100.00},
+    {'date': '2024-05-15', 'description': 'CLOTHING STORE', 'amount': -80.00},
+    {'date': '2024-05-20', 'description': 'GROCERY STORE', 'amount': -70.00},
+    {'date': '2024-05-25', 'description': 'RESTAURANT', 'amount': -45.00}
+]
 
-    # Initialize an empty string to store the extracted text
-    text = ''
+# Convert bank statement data to a DataFrame
+df = pd.DataFrame(bank_statement)
 
-    # Iterate through each page of the PDF
-    for page_num in range(len(pdf_reader.pages)):
-        # Get the page object
-        page = pdf_reader.pages[page_num]
+# Group transactions by description and sum the amounts
+transactions = df.groupby('description').agg({'date': 'count', 'amount': 'sum'})
 
-        # Extract text from the page
-        page_text = page.extract_text()
+# Create a bar graph
+plt.bar(transactions.index, transactions['amount'], color='skyblue')
 
-        # Append the extracted text to the string
-        text += page_text
+# Adding labels and title
+plt.xlabel('Transaction Categories')
+plt.ylabel('Amount ($)')
+plt.title('Monthly Transactions')
 
-# Print the extracted text
-print(text)
+# Adding date labels
+for i, amount in enumerate(transactions['amount']):
+    plt.text(i, amount + 5, f"{transactions['date'][i]} transactions", ha='center')
+
+# Rotating x-axis labels for better readability
+plt.xticks(rotation=45)
+
+# Displaying the plot
+plt.tight_layout()
+plt.show()
